@@ -1,0 +1,452 @@
+Vamos falar sobre Redes neurais recorrentes (Recurrent Neural Nets - RNNs)
+
+(pausa)
+
+Vamos lá...
+Dada uma sequÊncia de inputs, queremos prever o próximo.
+
+(pausa)
+
+Aplicações:
+• Regressão para séries temporais,
+• texto, processamento de linguagem natural (NLP),
+• áudio, sequências de ondas,
+• sequências genômicas.
+• etc
+
+(fim)
+
+
+Modelagem sequencial em linguagem: Previsão da próxima palavra
+
+(pausa)
+
+
+Exemplo:
+Se o input for a sequência de palavras:
+"Os alunos tiraram uma nota muito boa na" 
+e queremos prever a próxima palavra: prova.
+
+(pausa)
+
+
+A quantidade de valores no vetor de input (sequência de palavras) tem influência?
+Idealmente, queremos um modelo que possa receber diferentes quantidades de palavras como input.
+(pausa)
+
+Para isso, podemos fixar um valor de tamanho possível (window).
+Por exemplo, poderíamos (não idealmente) fixar para duas palavras de input:
+
+(pausa)
+
+Também precisamos encontrar um padrão para representar os dados. Como por exemplo, alocando valores em um
+vetor de tamanho fixo (escolhido), para cada palavra:
+(pausa)
+
+
+Contudo, se setarmos um valor fixo de palavras utilizadas como input para o modelo, o histórico é limitado e não
+será possível realizar o aprendizado em longo prazo.
+
+(fim)
+
+
+Exemplo 1 - Dependências a longo termo
+
+(pausa)
+
+
+Nasci na Alemanha e lá vivi por muitos anos, mas agora vivo em São Paulo. Falo
+fluentemente.
+
+(pausa)
+
+
+Com alguns exemplos específicos, fica clara a dependência de longo prazo. Apesar de sabermos que a resposta é ”alemão”, com poucos inputs, o modelo não conseguiria prever isto.
+
+(pausa)
+
+Nestes casos, fixar uma ”janela” de inputs possíveis não é bom, pois precisamos de 
+informações anteriores para
+conseguir prever corretamente.
+
+(pausa)
+
+
+Uma maneira de atacar este problema é:usar todas as palavras de input, representando as palavras por suas contagens (frequência de aparições), em um vetor:
+
+(pausa)
+
+
+Nasci na Alemanha, mas agora vivo na Amazônia. Falo X
+.
+
+(pausa)
+
+
+Então temos o ”Bag of Words”:
+
+Cada valor do vetor de input representa uma palavra e a quantidade de vezes que aparece.
+
+(fim)
+
+
+Ordem das palavras
+(pausa)
+
+
+contagem não preserva a ordem
+(pausa)
+
+
+A comida estava boa, nada ruim.
+A comida estava ruim, nada boa.
+(pausa)
+
+
+Apesar de que ambas sequências de palavras possuem as mesmas palavras, a ordem afetou o significado.
+A ordem das palavras também pode afetar o aprendizado.
+
+(fim)
+
+
+Modelagem sequencial: Critérios
+
+(pausa)
+
+Então, queremos que nosso modelo:
+(pausa)
+
+
+• Utilize sequências de tamanho variável
+• Aprenda dependências a longo prazo
+• Consiga manter informação sobre a ordem
+• Compartilhe parâmetros sobre a sequência.
+Então, abordaremos as Redes Neurais Recor-
+rentes (RNN).
+
+(fim)
+
+Recurrent Neural Networks (RNNs)
+
+(pausa)
+
+
+Nas redes mais simples, de tipo ”feed forward”, os
+dados propagam em uma direção.
+
+(pausa)
+
+Já, para redes neurais recorrentes (RNNs), os mod-
+elos podem lidar com sequências de inputs, ao invés de ape-
+nas um input.
+
+(pausa)
+
+
+ 
+(E há ainda outros tipos de redes...)
+
+(fim)
+
+Redes Neurais padrão vs Redes Neurais Recorrentes
+
+(pausa)
+
+
+
+Padrão:
+não conseguem manter informações sobre eventos passados, em informações sequenciais.
+RNNs:
+Como possuem ”loops” internos, permitem propagação da informação e memorização (acesso) a informações ”anti-
+gas”.
+ 
+(pausa)
+
+
+Na RNN, no tempo t, a partir do input x t computa o output ŷ t , e também atualiza o estado interior, passando a
+informação pelo loop interno (célula recorrente).
+(Isto é o que denomina sua recorrência)
+A relação de recorrência é aplicada sobre cada iteração t, com o cálculo:
+h de t
+(que é o estado atual) = f de (
+h de t−1 (estado anterior), x de t (input))
+
+(pausa)
+
+
+h t é o estado da célula
+f W é uma função parametrizada por W
+
+(pausa)
+
+Observação: atualização do estado depende do estado anterior h de t−1 , e do input atual x de t (são os inputs da f W ).
+
+(pausa)
+
+
+A mesma função f W é utilizada em todas iterações.
+
+(fim)
+
+RNN : atualização de estado e output
+A atualização do estado escondido (hidden state) se dá pela aplicação de uma função:
+
+(pausa)
+
+
+h de t  = tangente hiperbólica do resultado do produto de uma matriz de pesos com o estado anterior somado do produto de uma matriz de pesos com o input atual
+
+(pausa)
+
+
+Assim como em redes simples do tipo ”feed forward”, consiste na aplicação de uma função não linear (tanh(x) no
+caso) e multiplicação por matriz de pesos W.
+
+(pausa)
+
+
+A diferença é que há duas matrizes de peso, pois alimentamos a rede com tanto o vetor de input x t quanto o estado anterior h t .
+
+(pausa)
+
+
+E o cálculo do output se dá por:
+
+(pausa)
+
+ŷ t é o produto de W por h
+h de t
+
+(pausa)
+
+
+Dessa maneira, a RNN atualiza o estado e produz um output, que depende dos pesos, e tem fatores não lineares.
+
+(fim)
+
+RNN: Grafos computados com o tempo
+
+(pausa)
+
+
+Ao invés de representar a célula de recorrência com um loop interno, podemos representar a RNN com cada célula
+, de cada estado sobre o tempo, como cópias da mesma célula, ligadas sequencialmente.
+
+(Cada célula passa para a próxima o valor do h t (estado atual), e também o input atual (x t ).
+
+(pausa)
+
+
+ 
+Podemos também computar a perda L t para cada output ŷ t .
+Desta maneira, a perda total pode ser a soma de cada perda:
+
+(pausa)
+
+
+L(W, X) = somatorio de cada L t (W xy , W xh , x t )
+
+(fim)
+
+RNNs em Tensorflow
+(pausa)
+
+ 
+A função call() é muito importante, pois define como será o passo iterativo na rede.
+
+(fim)
+
+Treinamento das RNNs: Backpropagation sobre o tempo
+
+(pausa)
+
+Em modelos feed-forward (camadas densamente conectadas):
+
+(pausa)
+
+• Propagação Feed-Forward : input → output
+• Backpropagation dos gradientes: derivação da perda sobre cada parâmetro de peso (gradiente da função de custo com relação ao peso)
+
+(pausa)
+
+  
+Em RNNs:
+• A aplicação de Backpropagation deve acontecer para cada tempo t, e sobre todos tempos t.
+ 
+(fim)
+
+RNN: Gradient Flow
+
+(pausa)
+
+Gradient Flow : como é computado o gradiente neste modelo em cadeia.
+• Há muitas multiplicações repetidas de fatores de W hh e cálculos de gradiente.
+
+(pausa)
+
+Há dois cenários interessantes que podem resultar:
+
+(1) Muitos valores > 1 (matriz de peso ou gradientes grandes)
+(pausa)
+
+• Gradientes ”explosivos” (difíceis de otimizá-los) (exploding gradients)
+• Para ajustar, pode-se aplicar ”gradient clipping”, escalando para valores menores.
+
+(pausa)
+
+(2) Muitos valores < 1 (matriz de peso ou gradientes pequenos)
+(pausa)
+
+• Gradientes ”desaparecidos” (impossibilita o treinamento da rede) (vanishing gradients)
+• há 3 maneiras de atacar este problema, alterando:
+1. Função de ativação
+2. Inicialização dos pesos
+3. Arquitetura da rede
+
+(pausa)
+
+Esta questão é importante, pois dependendo do problema, informações mais antigas são cruciais, ou informações
+mais recentes.
+
+(fim)
+
+Ajuste dos gradientes: (1) Escolha da função de ativação
+
+(pausa)
+
+
+Quando a nossa função de ativação é a relu, g(x) = ReLU (x):
+a derivada de g é igual a 1, ∀x > 0
+
+(pausa)
+
+Para as outras (tanh(x) e σ(x)), g 0 (x) pode ser menor que 1, e não ajudar com o problema dos gradientes pequenos
+(vanishing gradients).
+
+(fim)
+
+Ajuste dos gradientes: (2) Inicialização de Parâmetros
+Pode-se inicializar os pesos pela matriz identidade:
+
+(pausa)
+
+
+Isto ajuda a impedir que os pesos diminuam excessivamente de maneira rápida.
+
+(fim)
+
+Ajuste dos gradientes: (3) Gated Cells (células com ”portões”)
+(pausa)
+
+
+Utilizar unidades recorrentes mais complexas, controlando que informações são passadas nas iterações.
+
+(pausa)
+
+• Solução mais robusta
+• utilizada em LSTMs, GRU, etc
+• ajuda a encontrar dependências a longo termo nos dados
+
+(pausa)
+
+
+Daí, podemos introduzir:
+Long Short Term Memory (LSTM) : (Memória de Longo e Curto Termo):
+Redes que dependem de gated cells (células ”portão”), admnistrando a informação durante as iterações.
+
+(fim)
+
+LSTMs
+
+(pausa)
+
+
+RNN padrão: células repetidas, com um nó de computação simples, uma função não-linear.
+
+(pausa)
+
+  
+LSTM: blocos computacionais, com controle de informação.
+
+ (pausa)
+
+Estes blocos computacionais podem encontrar informações por muitas iterações temporais.
+
+(fim)
+
+Portão (Gate) das LSTMs
+
+(pausa)
+
+Gate: estrutura que permite adição ou remoção de informação, opcionalmente
+selecionando as informações, por meio da função sigmoide σ : R → [0, 1].
+
+(fim)
+
+LSTM: processamento de informação
+
+(pausa)
+
+ 
+(1) Forget (2) Store (3) Update (4) Output
+(pausa)
+
+Ou seja, 
+(1) Esquecimento (2) Armazenamento (3) Atualização (4) Saída
+
+(fim)
+
+(1) Forget :
+Esquecimento de informação irrelevante.
+
+(fim)
+
+(2) Store :
+Armazena informação relevante no estado da célula.
+
+(fim)
+
+(3) Udapte :
+Atualiza seletivamente os valores das células
+
+
+(3) Output :
+Portão (Gate) controla que informação será passada para a próxima célula.
+
+(fim)
+
+LSTM Gradient Flow
+(pausa)
+
+O fluxo de gradiente é ininterrupto.
+
+(fim)
+
+LSTM: conceitos importantes
+(pausa)
+
+1. Mantém estados de célula separados do que é retornado como output.
+(pausa)
+
+2. Usam ”portões” (Gates) para controlar informação:
+(pausa)
+
+• Esquece informações irrelevantes
+• Armazena informações relevantes
+• seletivamente atualiza o estado da célula
+• portão de Output controla a informação passada para a próxima célula, enviando uma versão filtrada
+(pausa)
+
+3. Fluxo de gradiente ininterruputo promove treinamento eficiente, com Backpropagation pelo tempo.
+
+(fim)
+
+Aplicações de RNNs
+(pausa)
+
+• Regressão
+• Geração de Música
+• Processamento de Linguagem Natural (NLP)
+• etc
+
+
